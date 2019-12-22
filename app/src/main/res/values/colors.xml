@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#FFFFFF</color>
+    <color name="colorPrimaryDark">#263238</color>
+    <color name="colorAccent">#00B0FF</color>
+
+    <color name="colorTextPrimary">#454545</color>
+    <color name="colorTextHint">#A1A1A1</color>
+    <color name="colorToolbarIcon">#818181</color>
+    <color name="colorToolbarBottom">#D0D0D0</color>
+    <color name="colorToolbarTop">#E5E5E5</color>
+    <color name="colorBgSearch">#F6F6F6</color>
+    <color name="colorSelectedNote">#FCE08D</color>
+    <color name="colorTextBox">#80E5E5E5</color>
+</resources>

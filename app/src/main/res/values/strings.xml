@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">My Note</string>
+    <string name="empty_note">You do not have any note.</string>
+    <string name="search_hint">Search…</string>
+</resources>
