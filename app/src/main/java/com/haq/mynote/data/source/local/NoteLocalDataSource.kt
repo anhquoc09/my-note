@@ -18,16 +18,16 @@ class NoteLocalDataSource @Inject constructor(private val noteDao: NoteDao) : No
         MutableLiveData<List<NoteEntity>>().apply {
             postValue(
                 mutableListOf(
-                    NoteEntity("1", "a", "b", System.currentTimeMillis()),
-                    NoteEntity("2", "aa", "bb", System.currentTimeMillis()),
-                    NoteEntity("3", "aaa", "bbb", System.currentTimeMillis()),
-                    NoteEntity("4", "aaaa", "bbbb", System.currentTimeMillis()),
-                    NoteEntity("5", "aaaa", "bbbb", System.currentTimeMillis()),
-                    NoteEntity("6", "aaaa", "bbbb", System.currentTimeMillis()),
-                    NoteEntity("7", "aaaa", "bbbb", System.currentTimeMillis()),
-                    NoteEntity("8", "aaaa", "bbbb", System.currentTimeMillis()),
-                    NoteEntity("9", "aaaa", "bbbb", System.currentTimeMillis()),
-                    NoteEntity("10", "aaaa", "bbbb", System.currentTimeMillis())
+                    NoteEntity("1", "Hoang Anh Quốc", "b", System.currentTimeMillis()),
+                    NoteEntity("2", "Hoang Anh Quốca", "bb", System.currentTimeMillis()),
+                    NoteEntity("3", "Hoang Anh Quốcaa", "bbb", System.currentTimeMillis()),
+                    NoteEntity("4", "Hoang Anh Quốcaaa", "bbbb", System.currentTimeMillis()),
+                    NoteEntity("5", "Hoang Anh Quốcaaa", "bbbb", System.currentTimeMillis()),
+                    NoteEntity("6", "Hoang Anh Quốcaaa", "bbbb", System.currentTimeMillis()),
+                    NoteEntity("7", "Hoang Anh Quốcaaa", "bbbb", System.currentTimeMillis()),
+                    NoteEntity("8", "Hoang Anh Quốcaaa", "bbbb", System.currentTimeMillis()),
+                    NoteEntity("9", "Hoang Anh Quốcaaa", "bbbb", System.currentTimeMillis()),
+                    NoteEntity("10", "Hoang Anh Quốcaaa", "bbbb", System.currentTimeMillis())
                 )
             )
         }

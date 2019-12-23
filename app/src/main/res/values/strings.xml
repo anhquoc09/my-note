@@ -2,4 +2,6 @@
     <string name="app_name">My Note</string>
     <string name="empty_note">You do not have any note.</string>
     <string name="search_hint">Search…</string>
+    <string name="content_hint">Content</string>
+    <string name="title_hint">Title</string>
 </resources>

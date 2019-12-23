@@ -13,8 +13,8 @@ class NoteListAdapter : RecyclerView.Adapter<NoteListAdapter.NoteItemViewHolder>
     private var listNote = mutableListOf<NoteUIModel>()
 
     private val internalListener = object : OnNoteItemClickListener {
-        override fun invoke(item: NoteUIModel, position: Int) {
-            listener?.let { it(item, position) }
+        override fun invoke(item: NoteUIModel) {
+            listener?.let { it(item) }
         }
     }
 
@@ -50,7 +50,7 @@ class NoteListAdapter : RecyclerView.Adapter<NoteListAdapter.NoteItemViewHolder>
 
         init {
             itemView.setOnClickListener {
-                clickListener(data, adapterPosition)
+                clickListener(data)
             }
         }
 
@@ -58,10 +58,10 @@ class NoteListAdapter : RecyclerView.Adapter<NoteListAdapter.NoteItemViewHolder>
             this.data = data
             itemView.tvTitle.text = data.title
             itemView.tvSnippet.text = data.content
-            itemView.tvTime.text = TimeFormatter.format(data.createTime)
+            itemView.tvTime.text = TimeFormatter.shortFormat(data.createTime)
             itemView.setBackgroundResource(if (data.isSelected) R.color.colorSelectedNote else R.color.colorPrimary)
         }
     }
 }
 
-private typealias OnNoteItemClickListener = (NoteUIModel, Int) -> Unit
+private typealias OnNoteItemClickListener = (NoteUIModel) -> Unit

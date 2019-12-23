@@ -6,7 +6,6 @@ import android.arch.lifecycle.MutableLiveData
 import com.haq.mynote.data.NoteEntity
 import com.haq.mynote.data.Result
 import com.haq.mynote.data.source.NoteRepository
-import com.haq.mynote.stripAccents
 import com.haq.mynote.ui.BaseViewModel
 import kotlinx.coroutines.launch
 import java.util.*
@@ -50,7 +49,7 @@ class NoteListViewModel(private val noteRepository: NoteRepository) : BaseViewMo
                     it.title.trim().contains(filterKey.value.orEmpty(), true)
                 }
                 ?.map { transform(it) }.orEmpty(),
-            noteSelected = selectedNote.value
+            selectedNote = selectedNote.value
         )
 
     private fun transform(entity: NoteEntity) = NoteUIModel(
@@ -63,7 +62,7 @@ class NoteListViewModel(private val noteRepository: NoteRepository) : BaseViewMo
     )
 
     private fun createNote(title: String, content: String) {
-        uiScope.launch {
+        supervisorScope.launch {
             noteRepository.saveNote(
                 NoteEntity(
                     id = UUID.randomUUID().toString(),
@@ -76,7 +75,7 @@ class NoteListViewModel(private val noteRepository: NoteRepository) : BaseViewMo
     }
 
     private fun updateNote(note: NoteUIModel) {
-        uiScope.launch {
+        supervisorScope.launch {
             noteRepository.saveNote(
                 NoteEntity(
                     note.id,
@@ -99,9 +98,16 @@ class NoteListViewModel(private val noteRepository: NoteRepository) : BaseViewMo
         }
     }
 
+    fun newNote() {
+        selectedNote.value?.let {
+            updateNote(it)
+            selectedNote.value = null
+        }
+    }
+
     fun deleteSelectedNote() {
         _state.value = _state.value?.copy(isLoading = true)
-        uiScope.launch {
+        supervisorScope.launch {
             selectedNote.value?.let {
                 when (val result = noteRepository.deleteNote(it.id)) {
                     is Result.Success -> {

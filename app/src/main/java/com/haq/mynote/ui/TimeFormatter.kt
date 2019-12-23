@@ -5,35 +5,18 @@ import java.util.*
 
 object TimeFormatter {
 
-    private const val AN_HOUR_IN_MILLIS = 3600000L
-
-    private const val ONE_MINUTE_IN_SECOND = 60L
-
-    fun format(timestamp: Long): String {
+    fun shortFormat(timestamp: Long): String {
         when {
-            (System.currentTimeMillis() - timestamp) < AN_HOUR_IN_MILLIS -> {
-                var timestampOffset = System.currentTimeMillis() - timestamp
-                timestampOffset = if (timestampOffset >= 0) timestampOffset else 0
-                val secondsBefore = timestampOffset / 1000
-
-                return if (secondsBefore < ONE_MINUTE_IN_SECOND) {
-                    "$secondsBefore giây"
-                } else {
-                    (secondsBefore / ONE_MINUTE_IN_SECOND).toString() + " phút"
-                }
-            }
-
             isInThisDay(timestamp) -> {
-                val format = SimpleDateFormat("hh:mm", Locale.getDefault())
+                val format = SimpleDateFormat("hh:mm a", Locale.getDefault())
                 return format.format(Date(timestamp))
             }
-
             isInThisWeek(timestamp) -> {
-                val format = SimpleDateFormat("hh:mm EEE", Locale.getDefault())
+                val format = SimpleDateFormat("eee, hh:mm a", Locale.getDefault())
                 return format.format(Date(timestamp))
             }
             isInThisYear(timestamp) -> {
-                val format = SimpleDateFormat("MMM d", Locale.getDefault())
+                val format = SimpleDateFormat("MMM d, hh:mm a", Locale.getDefault())
                 return format.format(Date(timestamp))
             }
             else -> {
@@ -43,7 +26,12 @@ object TimeFormatter {
         }
     }
 
-    fun isInThisYear(timestamp: Long): Boolean {
+    fun fullFormat(timestamp: Long): String {
+        val format = SimpleDateFormat("MMMM d, yyyy 'at' hh:mm a", Locale.getDefault())
+        return format.format(Date(timestamp))
+    }
+
+    private fun isInThisYear(timestamp: Long): Boolean {
         val currentCalendar = Calendar.getInstance()
         val year = currentCalendar.get(Calendar.YEAR)
         val targetCalendar = Calendar.getInstance()
@@ -53,7 +41,7 @@ object TimeFormatter {
         return year == targetYear
     }
 
-    fun isInThisMonth(timestamp: Long): Boolean {
+    private fun isInThisMonth(timestamp: Long): Boolean {
         val currentCalendar = Calendar.getInstance()
         val month = currentCalendar.get(Calendar.MONTH)
         val targetCalendar = Calendar.getInstance()
@@ -63,7 +51,7 @@ object TimeFormatter {
         return month == targetMonth && isInThisYear(timestamp)
     }
 
-    fun isInThisWeek(timestamp: Long): Boolean {
+    private fun isInThisWeek(timestamp: Long): Boolean {
         val currentCalendar = Calendar.getInstance()
         val week = currentCalendar.get(Calendar.WEEK_OF_YEAR)
         val targetCalendar = Calendar.getInstance()
@@ -73,7 +61,7 @@ object TimeFormatter {
         return week == targetWeek && isInThisMonth(timestamp)
     }
 
-    fun isInThisDay(timestamp: Long): Boolean {
+    private fun isInThisDay(timestamp: Long): Boolean {
         val currentCalendar = Calendar.getInstance()
         val day = currentCalendar.get(Calendar.DATE)
         val targetCalendar = Calendar.getInstance()

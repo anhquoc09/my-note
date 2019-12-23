@@ -4,16 +4,16 @@ import android.arch.lifecycle.ViewModel
 import android.support.annotation.CallSuper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 
 abstract class BaseViewModel : ViewModel() {
-    private val job = Job()
+    private val supervisorJob = SupervisorJob()
 
-    protected val uiScope = CoroutineScope(Dispatchers.Main + job)
+    protected val supervisorScope = CoroutineScope(Dispatchers.Main + supervisorJob)
 
     @CallSuper
     override fun onCleared() {
         super.onCleared()
-        job.cancel()
+        supervisorJob.cancel()
     }
 }

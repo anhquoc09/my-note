@@ -1,5 +1,6 @@
 package com.haq.mynote.ui.notelist
 
+import android.app.Activity
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
@@ -13,13 +14,13 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import com.haq.mynote.KeyboardUtils
+import android.view.inputmethod.InputMethodManager
 import com.haq.mynote.R
 import com.haq.mynote.ViewModelFactory
 import com.haq.mynote.di.Injector
 import com.haq.mynote.showShortToast
-import com.haq.mynote.ui.AnimationUtil
 import com.haq.mynote.ui.BaseFragment
+import com.haq.mynote.ui.TimeFormatter
 import kotlinx.android.synthetic.main.fragment_note_list.*
 import javax.inject.Inject
 
@@ -68,19 +69,19 @@ class NoteListFragment : BaseFragment() {
     private fun initToolbar() {
         imgList.setOnClickListener {
             if (noteListContainer.visibility == VISIBLE) {
-                AnimationUtil.collapse(noteListContainer)
+                noteListContainer.visibility = GONE
             } else {
-                AnimationUtil.expand(noteListContainer)
+                noteListContainer.visibility = VISIBLE
             }
         }
         imgDelete.setOnClickListener { viewModel.deleteSelectedNote() }
-        imgNew.setOnClickListener { }
+        imgNew.setOnClickListener { viewModel.newNote() }
         imgClear.setOnClickListener { edtSearch.setText("") }
 
         edtSearch.imeOptions = EditorInfo.IME_ACTION_DONE
         edtSearch.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                KeyboardUtils.hideKeyboard(requireActivity())
+                hideKeyboard(requireActivity())
                 edtSearch.clearFocus()
                 true
             } else false
@@ -94,16 +95,16 @@ class NoteListFragment : BaseFragment() {
             }
         })
         edtSearch.setOnTouchListener { _, _ ->
-            if (noteListContainer.visibility != VISIBLE) AnimationUtil.expand(
-                noteListContainer
-            )
+            if (noteListContainer.visibility != VISIBLE) {
+                noteListContainer.visibility = VISIBLE
+            }
             false
         }
     }
 
     private fun initListNoteRecyclerView() {
         adapter = NoteListAdapter()
-        adapter.listener = { note, position -> onItemClick(note, position) }
+        adapter.listener = { note -> onItemClick(note) }
         rvListNote.adapter = adapter
         rvListNote.layoutManager = LinearLayoutManager(context, VERTICAL, false)
     }
@@ -113,18 +114,43 @@ class NoteListFragment : BaseFragment() {
     }
 
     private fun render(noteListSate: NotesState) {
-        progressLayout.visibility = if (noteListSate.isLoading) VISIBLE else GONE
-        adapter.setData(noteListSate.noteList)
-        tvEmpty.visibility = if (noteListSate.noteList.isNullOrEmpty()) VISIBLE else GONE
-        imgDelete.visibility = if (noteListSate.noteSelected != null) VISIBLE else GONE
+        renderList(noteListSate)
+        renderDetail(noteListSate)
         if (noteListSate.error != null) {
             showShortToast(noteListSate.error.message.toString())
         }
     }
 
-    private fun onItemClick(note: NoteUIModel, position: Int) {
-        KeyboardUtils.hideKeyboard(requireActivity())
+    private fun renderList(noteListSate: NotesState) {
+        progressLayout.visibility = if (noteListSate.isLoading) VISIBLE else GONE
+        adapter.setData(noteListSate.noteList)
+        tvEmpty.visibility = if (noteListSate.noteList.isNullOrEmpty()) VISIBLE else GONE
+    }
+
+    private fun renderDetail(noteListSate: NotesState) {
+        noteListSate.selectedNote?.let {
+            tvCreateTime.visibility = VISIBLE
+            tvCreateTime.text = TimeFormatter.fullFormat(it.createTime)
+        } ?: let { tvCreateTime.visibility = GONE }
+        edtTitle.setText(noteListSate.selectedNote?.title.orEmpty())
+        edtContent.setText(noteListSate.selectedNote?.content.orEmpty())
+        imgDelete.visibility = if (noteListSate.selectedNote != null) VISIBLE else GONE
+    }
+
+    private fun onItemClick(note: NoteUIModel) {
+        hideKeyboard(requireActivity())
         edtSearch.clearFocus()
         viewModel.selectNote(note.id)
+    }
+
+    private fun hideKeyboard(activity: Activity) {
+        try {
+            val inputMethodManager =
+                activity.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+            val view = activity.currentFocus ?: return
+            inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
+        } catch (e: Exception) {
+            showShortToast(e.message.toString())
+        }
     }
 }
