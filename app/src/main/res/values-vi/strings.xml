@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="confirm_delete_message">Bạn có muốn xóa bản ghi chú này?</string>
+    <string name="confirm_delete_no">Không</string>
+    <string name="confirm_delete_title">Xóa ghi chú</string>
+    <string name="confirm_delete_yes">Có</string>
+    <string name="content_hint">Nội dung</string>
+    <string name="empty_note">Bạn chưa có ghi chú nào.</string>
+    <string name="empty_title">Không có tiêu đề</string>
+    <string name="pressed_back_to_exit">Bấm quay lại lần nữa để thoát ứng dụng.</string>
+    <string name="search_hint">Tìm kiếm…</string>
+    <string name="title_hint">Tiêu đề</string>
+    <string name="time_full_format">d MMMM yyyy \'lúc\' hh:mm a</string>
+</resources>

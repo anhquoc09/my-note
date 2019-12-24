@@ -10,7 +10,7 @@ import com.haq.mynote.data.NoteEntity
 @Dao
 interface NoteDao {
 
-    @Query("SELECT * FROM notes ORDER by create_time ASC")
+    @Query("SELECT * FROM notes ORDER by create_time DESC")
     fun getNotes(): LiveData<List<NoteEntity>>
 
     @Query("SELECT * FROM notes WHERE id = :noteId")

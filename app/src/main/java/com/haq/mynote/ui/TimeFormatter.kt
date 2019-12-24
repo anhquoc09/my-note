@@ -1,5 +1,7 @@
 package com.haq.mynote.ui
 
+import com.haq.mynote.R
+import com.haq.mynote.getString
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -12,7 +14,7 @@ object TimeFormatter {
                 return format.format(Date(timestamp))
             }
             isInThisWeek(timestamp) -> {
-                val format = SimpleDateFormat("eee, hh:mm a", Locale.getDefault())
+                val format = SimpleDateFormat("EEE, hh:mm a", Locale.getDefault())
                 return format.format(Date(timestamp))
             }
             isInThisYear(timestamp) -> {
@@ -27,7 +29,7 @@ object TimeFormatter {
     }
 
     fun fullFormat(timestamp: Long): String {
-        val format = SimpleDateFormat("MMMM d, yyyy 'at' hh:mm a", Locale.getDefault())
+        val format = SimpleDateFormat(getString(R.string.time_full_format), Locale.getDefault())
         return format.format(Date(timestamp))
     }
 

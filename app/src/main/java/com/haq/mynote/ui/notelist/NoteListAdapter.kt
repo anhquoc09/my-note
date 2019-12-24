@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.haq.mynote.R
+import com.haq.mynote.getString
 import com.haq.mynote.ui.TimeFormatter
 import kotlinx.android.synthetic.main.note_item_layout.view.*
 
@@ -56,7 +57,7 @@ class NoteListAdapter : RecyclerView.Adapter<NoteListAdapter.NoteItemViewHolder>
 
         fun bindView(data: NoteUIModel) {
             this.data = data
-            itemView.tvTitle.text = data.title
+            itemView.tvTitle.text = if (data.title.isNotEmpty()) data.title else getString(R.string.empty_title)
             itemView.tvSnippet.text = data.content
             itemView.tvTime.text = TimeFormatter.shortFormat(data.createTime)
             itemView.setBackgroundResource(if (data.isSelected) R.color.colorSelectedNote else R.color.colorPrimary)

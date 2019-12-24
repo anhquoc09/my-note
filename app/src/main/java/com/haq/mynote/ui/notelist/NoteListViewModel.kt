@@ -7,6 +7,7 @@ import com.haq.mynote.data.NoteEntity
 import com.haq.mynote.data.Result
 import com.haq.mynote.data.source.NoteRepository
 import com.haq.mynote.ui.BaseViewModel
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -17,6 +18,10 @@ class NoteListViewModel(private val noteRepository: NoteRepository) : BaseViewMo
     private var filterKey = MutableLiveData<String>()
 
     private var selectedNote = MutableLiveData<NoteUIModel>()
+
+    private val titleLiveData = MutableLiveData<String>()
+
+    private val contentLiveData = MutableLiveData<String>()
 
     private val _state = MediatorLiveData<NotesState>().apply {
         value = NotesState(
@@ -61,21 +66,8 @@ class NoteListViewModel(private val noteRepository: NoteRepository) : BaseViewMo
         entity.id == selectedNote.value?.id
     )
 
-    private fun createNote(title: String, content: String) {
-        supervisorScope.launch {
-            noteRepository.saveNote(
-                NoteEntity(
-                    id = UUID.randomUUID().toString(),
-                    title = title,
-                    content = content,
-                    createTime = System.currentTimeMillis()
-                )
-            )
-        }
-    }
-
-    private fun updateNote(note: NoteUIModel) {
-        supervisorScope.launch {
+    private fun saveNote(note: NoteUIModel) {
+        GlobalScope.launch {
             noteRepository.saveNote(
                 NoteEntity(
                     note.id,
@@ -92,6 +84,7 @@ class NoteListViewModel(private val noteRepository: NoteRepository) : BaseViewMo
     }
 
     fun selectNote(noteId: String) {
+        saveNote()
         if (noteId != selectedNote.value?.id) {
             selectedNote.value =
                 allNote.value?.firstOrNull { it.id == noteId }?.run { transform(this) }
@@ -99,9 +92,26 @@ class NoteListViewModel(private val noteRepository: NoteRepository) : BaseViewMo
     }
 
     fun newNote() {
+        saveNote()
+        selectedNote.value = null
+    }
+
+    fun saveNote() {
         selectedNote.value?.let {
-            updateNote(it)
-            selectedNote.value = null
+            saveNote(it.apply {
+                this.title = titleLiveData.value.orEmpty()
+                this.content = contentLiveData.value.orEmpty()
+            })
+        } ?: let {
+            if (!titleLiveData.value.isNullOrEmpty() || !contentLiveData.value.isNullOrEmpty())
+                saveNote(
+                    NoteUIModel(
+                        UUID.randomUUID().toString(),
+                        titleLiveData.value.orEmpty(),
+                        contentLiveData.value.orEmpty(),
+                        System.currentTimeMillis()
+                    )
+                )
         }
     }
 
@@ -111,7 +121,7 @@ class NoteListViewModel(private val noteRepository: NoteRepository) : BaseViewMo
             selectedNote.value?.let {
                 when (val result = noteRepository.deleteNote(it.id)) {
                     is Result.Success -> {
-                        _state.postValue(combineData())
+                        selectedNote.value = null
                     }
                     is Result.Error -> {
                         _state.value =
@@ -122,12 +132,11 @@ class NoteListViewModel(private val noteRepository: NoteRepository) : BaseViewMo
         }
     }
 
-    fun saveNote(title: String, content: String) {
-        selectedNote.value?.let {
-            updateNote(it.apply {
-                this.title = title
-                this.content = content
-            })
-        } ?: createNote(title, content)
+    fun updateTitle(title: String) {
+        titleLiveData.value = title
+    }
+
+    fun updateContent(content: String) {
+        contentLiveData.value = content
     }
 }

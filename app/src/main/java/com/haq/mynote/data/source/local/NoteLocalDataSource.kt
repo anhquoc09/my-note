@@ -12,25 +12,25 @@ import javax.inject.Inject
 
 class NoteLocalDataSource @Inject constructor(private val noteDao: NoteDao) : NoteDataSource {
 
-//    override fun getNotes(): LiveData<List<NoteEntity>> = noteDao.getNotes()
+    override fun getNotes(): LiveData<List<NoteEntity>> = noteDao.getNotes()
 
-    override fun getNotes(): LiveData<List<NoteEntity>> =
-        MutableLiveData<List<NoteEntity>>().apply {
-            postValue(
-                mutableListOf(
-                    NoteEntity("1", "Hoang Anh Quốc", "b", System.currentTimeMillis()),
-                    NoteEntity("2", "Hoang Anh Quốca", "bb", System.currentTimeMillis()),
-                    NoteEntity("3", "Hoang Anh Quốcaa", "bbb", System.currentTimeMillis()),
-                    NoteEntity("4", "Hoang Anh Quốcaaa", "bbbb", System.currentTimeMillis()),
-                    NoteEntity("5", "Hoang Anh Quốcaaa", "bbbb", System.currentTimeMillis()),
-                    NoteEntity("6", "Hoang Anh Quốcaaa", "bbbb", System.currentTimeMillis()),
-                    NoteEntity("7", "Hoang Anh Quốcaaa", "bbbb", System.currentTimeMillis()),
-                    NoteEntity("8", "Hoang Anh Quốcaaa", "bbbb", System.currentTimeMillis()),
-                    NoteEntity("9", "Hoang Anh Quốcaaa", "bbbb", System.currentTimeMillis()),
-                    NoteEntity("10", "Hoang Anh Quốcaaa", "bbbb", System.currentTimeMillis())
-                )
-            )
-        }
+//    override fun getNotes(): LiveData<List<NoteEntity>> =
+//        MutableLiveData<List<NoteEntity>>().apply {
+//            postValue(
+//                mutableListOf(
+//                    NoteEntity("1", "Hoang Anh Quốc", "b", System.currentTimeMillis()),
+//                    NoteEntity("2", "Hoang Anh Quốca", "bb", System.currentTimeMillis()),
+//                    NoteEntity("3", "Hoang Anh Quốcaa", "bbb", System.currentTimeMillis()),
+//                    NoteEntity("4", "Hoang Anh Quốcaaa", "bbbb", System.currentTimeMillis()),
+//                    NoteEntity("5", "Hoang Anh Quốcaaa", "bbbb", System.currentTimeMillis()),
+//                    NoteEntity("6", "Hoang Anh Quốcaaa", "bbbb", System.currentTimeMillis()),
+//                    NoteEntity("7", "Hoang Anh Quốcaaa", "bbbb", System.currentTimeMillis()),
+//                    NoteEntity("8", "Hoang Anh Quốcaaa", "bbbb", System.currentTimeMillis()),
+//                    NoteEntity("9", "Hoang Anh Quốcaaa", "bbbb", System.currentTimeMillis()),
+//                    NoteEntity("10", "Hoang Anh Quốcaaa", "bbbb", System.currentTimeMillis())
+//                )
+//            )
+//        }
 
     override suspend fun getNote(noteId: String) =
         withContext(DispatcherProvider.io) {

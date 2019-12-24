@@ -4,6 +4,7 @@ import android.app.Activity
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
+import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.LinearLayoutManager.VERTICAL
 import android.text.Editable
@@ -28,6 +29,7 @@ class NoteListFragment : BaseFragment() {
 
     private lateinit var viewModel: NoteListViewModel
     private lateinit var adapter: NoteListAdapter
+    private var pressedTimeMillis = 0L
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
@@ -51,10 +53,24 @@ class NoteListFragment : BaseFragment() {
 
         initToolbar()
         initListNoteRecyclerView()
+        initContent()
         observeViewModel()
     }
 
-    override fun onBackPressed(): Boolean = false
+    override fun onPause() {
+        viewModel.saveNote()
+        super.onPause()
+    }
+
+    override fun onBackPressed(): Boolean {
+        val currentTimeMillis = System.currentTimeMillis()
+        if (currentTimeMillis - pressedTimeMillis <= 2000) {
+            return false
+        }
+        showShortToast(getString(R.string.pressed_back_to_exit))
+        pressedTimeMillis = currentTimeMillis
+        return true
+    }
 
     private fun injectComponent() {
         Injector.instance.appComponent.plusPresentationComponent().inject(this)
@@ -74,7 +90,7 @@ class NoteListFragment : BaseFragment() {
                 noteListContainer.visibility = VISIBLE
             }
         }
-        imgDelete.setOnClickListener { viewModel.deleteSelectedNote() }
+        imgDelete.setOnClickListener { showConfirmDialog() }
         imgNew.setOnClickListener { viewModel.newNote() }
         imgClear.setOnClickListener { edtSearch.setText("") }
 
@@ -107,6 +123,24 @@ class NoteListFragment : BaseFragment() {
         adapter.listener = { note -> onItemClick(note) }
         rvListNote.adapter = adapter
         rvListNote.layoutManager = LinearLayoutManager(context, VERTICAL, false)
+    }
+
+    private fun initContent() {
+        edtTitle.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                viewModel.updateTitle(s.toString())
+            }
+        })
+
+        edtContent.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                viewModel.updateContent(s.toString())
+            }
+        })
     }
 
     private fun observeViewModel() {
@@ -151,6 +185,21 @@ class NoteListFragment : BaseFragment() {
             inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
         } catch (e: Exception) {
             showShortToast(e.message.toString())
+        }
+    }
+
+    private fun showConfirmDialog() {
+        context?.let {
+            val dialogBuilder = AlertDialog.Builder(it).apply {
+                setMessage(getString(R.string.confirm_delete_message))
+                setCancelable(false)
+                setPositiveButton(getString(R.string.confirm_delete_yes)) { _, _ -> viewModel.deleteSelectedNote() }
+                setNegativeButton(getString(R.string.confirm_delete_no)) { dialog, _ -> dialog.cancel() }
+            }
+            val alert = dialogBuilder.create()
+            alert.setTitle(getString(R.string.confirm_delete_title))
+            alert.setCancelable(true)
+            alert.show()
         }
     }
 }
